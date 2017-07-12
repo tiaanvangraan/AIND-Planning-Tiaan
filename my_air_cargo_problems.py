@@ -206,6 +206,35 @@ class AirCargoProblem(Problem):
         executed.
         """
         # TODO implement (see Russell-Norvig Ed-3 10.2.3  or Russell-Norvig Ed-2 11.2)
+        #
+        # for i in self.state_map:
+        #     print("state_map :: ", i)
+
+
+        # for i in self.initial_state_TF:
+        #     print("initial_state_TF :: ", i)
+        #
+
+        # for i in self.initial:
+        #     print("initial :: ", i)
+
+        for i in self.actions_list:
+            print("result    :: ", self.result(node.state, i))
+            print("goal test :: ", self.goal_test(node.state))
+            node.state = self.result(node.state, i)
+
+        #
+        # for i in self.goal:
+        #     print("goal :: ", i)
+        #
+        # print("goal encoded :: ", encode_state(self.goal, self.state_map))
+        #
+        # print("node :: ", node)
+
+        # for i in node:
+        #     print("node :: ", i)
+
+
         count = 0
         return count
 
