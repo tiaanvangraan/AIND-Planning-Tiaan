@@ -218,10 +218,48 @@ class AirCargoProblem(Problem):
         # for i in self.initial:
         #     print("initial :: ", i)
 
+        # print(encode_state(self.goal, self.state_map))
+
+        # def goal_test(self, state: str) -> bool:
+        #     """ Test the state to see if goal is reached
+        #
+        #     :param state: str representing state
+        #     :return: bool
+        #     """
+        #     kb = PropKB()
+        #     kb.tell(decode_state(state, self.state_map).pos_sentence())
+        #     for clause in self.goal:
+        #         if clause not in kb.clauses:
+        #             return False
+        #     return True
+
+        state_pos = (decode_state(node.state, self.state_map)).pos
+        state_fit = 0
+
+        print("PRE state_fit", state_fit)
+
+        for i in self.goal:
+            if i in state_pos:
+                state_fit += 1
+
+        print("POST state_fit", state_fit)
+
+
         for i in self.actions_list:
             print("result    :: ", self.result(node.state, i))
+            print("goal      :: ", self.goal)
             print("goal test :: ", self.goal_test(node.state))
+
             node.state = self.result(node.state, i)
+
+        state_pos = (decode_state(node.state, self.state_map)).pos
+        state_fit = 0
+
+        for i in self.goal:
+            if i in state_pos:
+                state_fit += 1
+
+        print("POST state_fit", state_fit)
 
         #
         # for i in self.goal:
@@ -235,8 +273,8 @@ class AirCargoProblem(Problem):
         #     print("node :: ", i)
 
 
-        count = 0
-        return count
+        # count = 0
+        return state_fit
 
 
 def air_cargo_p1() -> AirCargoProblem:
