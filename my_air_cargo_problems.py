@@ -205,76 +205,30 @@ class AirCargoProblem(Problem):
         conditions by ignoring the preconditions required for an action to be
         executed.
         """
-        # TODO implement (see Russell-Norvig Ed-3 10.2.3  or Russell-Norvig Ed-2 11.2)
-        #
-        # for i in self.state_map:
-        #     print("state_map :: ", i)
+        i = 0
+        fit_pre = 0
+        fit_count = 0
 
+        while self.goal_test(node.state) == False:
+            action_to_perform = self.actions_list[i]
+            node.state = self.result(node.state, action_to_perform)
 
-        # for i in self.initial_state_TF:
-        #     print("initial_state_TF :: ", i)
-        #
+            state_pos = (decode_state(node.state, self.state_map)).pos
+            fit_cur = 0
 
-        # for i in self.initial:
-        #     print("initial :: ", i)
+            for test_goal in self.goal:
+                if test_goal in state_pos:
+                    fit_cur += 1
 
-        # print(encode_state(self.goal, self.state_map))
+            if fit_cur > fit_pre:
+                fit_count += 1
+                fit_pre = fit_cur
 
-        # def goal_test(self, state: str) -> bool:
-        #     """ Test the state to see if goal is reached
-        #
-        #     :param state: str representing state
-        #     :return: bool
-        #     """
-        #     kb = PropKB()
-        #     kb.tell(decode_state(state, self.state_map).pos_sentence())
-        #     for clause in self.goal:
-        #         if clause not in kb.clauses:
-        #             return False
-        #     return True
+            i += 1
 
-        state_pos = (decode_state(node.state, self.state_map)).pos
-        state_fit = 0
+        print("fit_count", fit_count)
 
-        print("PRE state_fit", state_fit)
-
-        for i in self.goal:
-            if i in state_pos:
-                state_fit += 1
-
-        print("POST state_fit", state_fit)
-
-
-        for i in self.actions_list:
-            print("result    :: ", self.result(node.state, i))
-            print("goal      :: ", self.goal)
-            print("goal test :: ", self.goal_test(node.state))
-
-            node.state = self.result(node.state, i)
-
-        state_pos = (decode_state(node.state, self.state_map)).pos
-        state_fit = 0
-
-        for i in self.goal:
-            if i in state_pos:
-                state_fit += 1
-
-        print("POST state_fit", state_fit)
-
-        #
-        # for i in self.goal:
-        #     print("goal :: ", i)
-        #
-        # print("goal encoded :: ", encode_state(self.goal, self.state_map))
-        #
-        # print("node :: ", node)
-
-        # for i in node:
-        #     print("node :: ", i)
-
-
-        # count = 0
-        return state_fit
+        return fit_count
 
 
 def air_cargo_p1() -> AirCargoProblem:
