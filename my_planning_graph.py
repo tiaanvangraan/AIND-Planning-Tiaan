@@ -346,13 +346,13 @@ class PlanningGraph():
 
                     if prenode.symbol == literal.symbol:
                         match += 1
-                        print("prenode.symbol : ", prenode.symbol)
-                        print("literal.symbol : ", literal.symbol)
+                        # print("prenode.symbol : ", prenode.symbol)
+                        # print("literal.symbol : ", literal.symbol)
 
             if match == len(PgNode_a_tst.prenodes) and match > 0:
                 self.a_levels[level].add(PgNode_a_tst)
-                print("match : ", match)
-                print("len(PgNode_a_tst.prenodes : )", len(PgNode_a_tst.prenodes))
+                # print("match : ", match)
+                # print("len(PgNode_a_tst.prenodes : )", len(PgNode_a_tst.prenodes))
 
         # print("POST len(self.a_levels)", len(self.a_levels))
         # print("POST len(self.a_levels[0])", len(self.a_levels[level]))
@@ -384,6 +384,19 @@ class PlanningGraph():
         #   may be "added" to the set without fear of duplication.  However, it is important to then correctly create and connect
         #   all of the new S nodes as children of all the A nodes that could produce them, and likewise add the A nodes to the
         #   parent sets of the S nodes
+
+        self.s_levels.append(set())
+
+        for action in self.a_levels[level - 1]:
+            # action.show()
+            for effnode in action.effnodes:
+                # print(effnode.symbol)
+                # print(effnode.is_pos)
+                PgNode_s_tst = PgNode_s(effnode.symbol, effnode.is_pos)
+                PgNode_s_tst.parents.add(action)
+                self.s_levels[level].add(PgNode_s_tst)
+                action.children.add(PgNode_s_tst)
+
 
     def update_a_mutex(self, nodeset):
         """ Determine and update sibling mutual exclusion for A-level nodes
