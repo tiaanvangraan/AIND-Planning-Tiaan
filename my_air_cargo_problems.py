@@ -226,7 +226,7 @@ class AirCargoProblem(Problem):
 
             i += 1
 
-        print("fit_count", fit_count)
+        # print("fit_count", fit_count)
 
         return fit_count
 
