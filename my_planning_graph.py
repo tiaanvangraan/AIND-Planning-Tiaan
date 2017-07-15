@@ -317,7 +317,7 @@ class PlanningGraph():
             PgNode_a_tst = PgNode_a(action)
             PgNode_a_tst.parents = PgNode_a_tst.prenodes
 
-            PgNode_a_tst.show()
+            # PgNode_a_tst.show()
 
             for prenode in PgNode_a_tst.prenodes:
                 match = 0
@@ -326,15 +326,15 @@ class PlanningGraph():
                 for literal in self.s_levels[level]:
                     if prenode.symbol == literal.symbol and prenode.is_pos == literal.is_pos:
                         match += 1
-                        print("MATCH FOUND ##### prenode.symbol : ", prenode.symbol, "#### literal.symbol : ",
-                              literal.symbol, "match count : ", match)
-                    else:
-                        print("NO MATCH    ##### prenode.symbol : ", prenode.symbol, "#### literal.symbol : ",
-                              literal.symbol, "match count : ", match)
+                    #     print("MATCH FOUND ##### prenode.symbol : ", prenode.symbol, "#### literal.symbol : ",
+                    #           literal.symbol, "match count : ", match)
+                    # else:
+                    #     print("NO MATCH    ##### prenode.symbol : ", prenode.symbol, "#### literal.symbol : ",
+                    #           literal.symbol, "match count : ", match)
 
             if match == len(PgNode_a_tst.prenodes) and match > 0:
                 self.a_levels[level].add(PgNode_a_tst)
-                print("ADDED")
+                # print("ADDED")
 
         for PgNode_a_tmp in self.a_levels[level]:
             for prenode in PgNode_a_tmp.prenodes:
@@ -415,6 +415,7 @@ class PlanningGraph():
             return False
         return True
 
+
     def inconsistent_effects_mutex(self, node_a1: PgNode_a, node_a2: PgNode_a) -> bool:
         """
         Test a pair of actions for inconsistent effects, returning True if
@@ -430,7 +431,14 @@ class PlanningGraph():
         :return: bool
         """
         # TODO test for Inconsistent Effects between nodes
-        return False
+        state = False
+
+        for eff_a1 in node_a1.effnodes:
+            for eff_a2 in node_a2.effnodes:
+                if eff_a1.symbol == eff_a2.symbol and eff_a1.is_pos != eff_a2.is_pos:
+                    state = True
+
+        return state
 
     def interference_mutex(self, node_a1: PgNode_a, node_a2: PgNode_a) -> bool:
         """
