@@ -315,42 +315,32 @@ class PlanningGraph():
 
         for action in self.all_actions:
             PgNode_a_tst = PgNode_a(action)
-            # PgNode_a_tst.parents = PgNode_a_tst.prenodes
-            match = 0
+            PgNode_a_tst.parents = PgNode_a_tst.prenodes
 
-            # PgNode_a_tst.show()
-            # print("PgNode_a : ", action)
+            PgNode_a_tst.show()
 
             for prenode in PgNode_a_tst.prenodes:
-                # prenode.show()
-                # print("PgNode_a_tst.prenodes : ", prenode.symbol)
-                PgNode_a_tst.parents.add(prenode)
+                match = 0
+                # PgNode_a_tst.parents.add(prenode)
 
                 for literal in self.s_levels[level]:
-                    # literal.show()
-                    # print("PgNode_s : ", literal.symbol)
-
-                    if prenode.symbol == literal.symbol:
+                    if prenode.symbol == literal.symbol and prenode.is_pos == literal.is_pos:
                         match += 1
-                        # print("prenode.symbol : ", prenode.symbol)
-                        # print("literal.symbol : ", literal.symbol)
+                        print("MATCH FOUND ##### prenode.symbol : ", prenode.symbol, "#### literal.symbol : ",
+                              literal.symbol, "match count : ", match)
+                    else:
+                        print("NO MATCH    ##### prenode.symbol : ", prenode.symbol, "#### literal.symbol : ",
+                              literal.symbol, "match count : ", match)
 
             if match == len(PgNode_a_tst.prenodes) and match > 0:
                 self.a_levels[level].add(PgNode_a_tst)
-                # print("match : ", match)
-                # print("len(PgNode_a_tst.prenodes : )", len(PgNode_a_tst.prenodes))
-
-        # print("POST len(self.a_levels)", len(self.a_levels))
-        # print("POST len(self.a_levels[0])", len(self.a_levels[level]))
+                print("ADDED")
 
         for PgNode_a_tmp in self.a_levels[level]:
             for prenode in PgNode_a_tmp.prenodes:
                 for literal in self.s_levels[level]:
                     if prenode.symbol == literal.symbol:
                         literal.children.add(PgNode_a_tmp)
-
-        # for i in self.a_levels[0]:
-        #     i.show()
 
 
     def add_literal_level(self, level):
@@ -374,7 +364,6 @@ class PlanningGraph():
         self.s_levels.append(set())
 
         for action in self.a_levels[level - 1]:
-            # action.show()
             for effnode in action.effnodes:
                 # print(effnode.symbol)
                 # print(effnode.is_pos)
