@@ -339,7 +339,7 @@ class PlanningGraph():
         for PgNode_a_tmp in self.a_levels[level]:
             for prenode in PgNode_a_tmp.prenodes:
                 for literal in self.s_levels[level]:
-                    if prenode.symbol == literal.symbol:
+                    if prenode.symbol == literal.symbol and prenode.is_pos == literal.is_pos:
                         literal.children.add(PgNode_a_tmp)
 
 
@@ -481,7 +481,17 @@ class PlanningGraph():
         """
 
         # TODO test for Competing Needs between nodes
-        return False
+        state = False
+
+        for pre_a1 in node_a1.prenodes:
+            for pre_a2 in node_a2.prenodes:
+                # print(pre_a1.symbol, pre_a2.symbol, pre_a1.is_pos, pre_a2.is_pos)
+
+                if pre_a1.symbol == pre_a2.symbol and pre_a1.is_pos != pre_a2.is_pos:
+                    state = True
+                    print("SET")
+
+        return state
 
     def update_s_mutex(self, nodeset: set):
         """ Determine and update sibling mutual exclusion for S-level nodes
@@ -516,7 +526,12 @@ class PlanningGraph():
         :return: bool
         """
         # TODO test for negation between nodes
-        return False
+        state = False
+
+        if node_s1.symbol == node_s2.symbol and node_s1.is_pos != node_s2.is_pos:
+            state = True
+
+        return state
 
     def inconsistent_support_mutex(self, node_s1: PgNode_s, node_s2: PgNode_s):
         """
@@ -535,7 +550,33 @@ class PlanningGraph():
         :return: bool
         """
         # TODO test for Inconsistent Support between nodes
-        return False
+        node_level_mutex = False
+        set_match = False
+
+        a1 = node_s1.children
+        a2 = node_s2.children
+
+        print("len(a1) : ", len(a1), "len(a2) : ", len(a2))
+
+        for a1_i in a1:
+            for a2_i in a2:
+                print(a1_i.action, a2_i.action)
+
+                if a1_i.is_mutex(a2_i) == False:
+                    print("mutex found : ", a1_i.action, a2_i.action)
+                    set_match = True
+
+        if node_s1.is_mutex(node_s2):
+            node_level_mutex = True
+
+        if node_level_mutex == True:
+            return True
+        else:
+            if set_match == False:
+                return True
+            else:
+                return False
+
 
     def h_levelsum(self) -> int:
         """The sum of the level costs of the individual goals (admissible if goals independent)
