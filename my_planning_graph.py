@@ -314,17 +314,30 @@ class PlanningGraph():
         self.a_levels.append(set())
 
         for action in self.all_actions:
-            PgNode_a_tst = PgNode_a(action)
-            PgNode_a_tst.parents = PgNode_a_tst.prenodes
+            PgNode_a_tmp = PgNode_a(action)
+
+            # print("PgNode_a_tmp.action : ", PgNode_a_tmp.action)
+            # print("len(PgNode_a_tmp.prenodes)", len(PgNode_a_tmp.prenodes))
+            # print("len(PgNode_a_tmp.effnodes)", len(PgNode_a_tmp.effnodes))
+            # print("len(PgNode_a_tmp.parents)", len(PgNode_a_tmp.parents))
+            # print("len(PgNode_a_tmp.childred)", len(PgNode_a_tmp.children))
+            # print("len(PgNode_a_tmp.mutex)", len(PgNode_a_tmp.mutex))
+
+            PgNode_a_tmp.parents = PgNode_a_tmp.prenodes
+            PgNode_a_tmp.children = PgNode_a_tmp.effnodes
+
+            # print("len(PgNode_a_tmp.parents)", len(PgNode_a_tmp.parents))
+            # print("len(PgNode_a_tmp.childred)", len(PgNode_a_tmp.children), "\n")
 
             # PgNode_a_tst.show()
 
-            for prenode in PgNode_a_tst.prenodes:
+            for prenode in PgNode_a_tmp.prenodes:
                 match = 0
-                # PgNode_a_tst.parents.add(prenode)
+                # PgNode_a_tmp.parents.add(prenode)
 
                 for literal in self.s_levels[level]:
                     if prenode.symbol == literal.symbol and prenode.is_pos == literal.is_pos:
+                    # if prenode.is_mutex(literal) == False:
                         match += 1
                     #     print("MATCH FOUND ##### prenode.symbol : ", prenode.symbol, "#### literal.symbol : ",
                     #           literal.symbol, "match count : ", match)
@@ -332,9 +345,14 @@ class PlanningGraph():
                     #     print("NO MATCH    ##### prenode.symbol : ", prenode.symbol, "#### literal.symbol : ",
                     #           literal.symbol, "match count : ", match)
 
-            if match == len(PgNode_a_tst.prenodes) and match > 0:
-                self.a_levels[level].add(PgNode_a_tst)
+            if match == len(PgNode_a_tmp.prenodes) and match > 0:
+                self.a_levels[level].add(PgNode_a_tmp)
                 # print("ADDED")
+
+        # for literal in self.s_levels[level]:
+        #     print("PRE", literal.symbol, "len(literal.parents)", len(literal.parents))
+        #     print("PRE", literal.symbol, "len(literal.childred)", len(literal.children))
+        #     print("PRE", literal.symbol, "len(literal.mutex)", len(literal.mutex))
 
         for PgNode_a_tmp in self.a_levels[level]:
             for prenode in PgNode_a_tmp.prenodes:
@@ -342,6 +360,10 @@ class PlanningGraph():
                     if prenode.symbol == literal.symbol and prenode.is_pos == literal.is_pos:
                         literal.children.add(PgNode_a_tmp)
 
+        # for literal in self.s_levels[level]:
+        #     print("POST", literal.symbol, "len(literal.parents)", len(literal.parents))
+        #     print("POST", literal.symbol, "len(literal.childred)", len(literal.children))
+        #     print("POST", literal.symbol, "len(literal.mutex)", len(literal.mutex))
 
     def add_literal_level(self, level):
         """ add an S (literal) level to the Planning Graph
@@ -367,10 +389,16 @@ class PlanningGraph():
             for effnode in action.effnodes:
                 # print(effnode.symbol)
                 # print(effnode.is_pos)
-                PgNode_s_tst = PgNode_s(effnode.symbol, effnode.is_pos)
-                PgNode_s_tst.parents.add(action)
-                self.s_levels[level].add(PgNode_s_tst)
-                action.children.add(PgNode_s_tst)
+                # PgNode_s_tmp = PgNode_s(effnode.symbol, effnode.is_pos)
+                PgNode_s_tmp = effnode
+                PgNode_s_tmp.parents.add(action)
+                self.s_levels[level].add(PgNode_s_tmp)
+                action.children.add(PgNode_s_tmp)
+
+        # for literal in self.a_levels[level - 1]:
+        #     print("POST", level, literal.action, "len(literal.parents)", len(literal.parents))
+        #     print("POST", level, literal.action, "len(literal.childred)", len(literal.children))
+        #     print("POST", level, literal.action, "len(literal.mutex)", len(literal.mutex))
 
 
     def update_a_mutex(self, nodeset):
@@ -483,11 +511,14 @@ class PlanningGraph():
         # TODO test for Competing Needs between nodes
         state = False
 
-        for pre_a1 in node_a1.prenodes:
-            for pre_a2 in node_a2.prenodes:
+        print(len(node_a1.prenodes), len(node_a1.parents), len(node_a2.prenodes), len(node_a2.parents))
+
+        for pre_a1 in node_a1.parents:
+            for pre_a2 in node_a2.parents:
                 # print(pre_a1.symbol, pre_a2.symbol, pre_a1.is_pos, pre_a2.is_pos)
 
-                if pre_a1.symbol == pre_a2.symbol and pre_a1.is_pos != pre_a2.is_pos:
+                # if pre_a1.symbol == pre_a2.symbol and pre_a1.is_pos != pre_a2.is_pos:
+                if pre_a1.is_mutex(pre_a2):
                     state = True
                     print("SET")
 
@@ -556,7 +587,7 @@ class PlanningGraph():
         a1 = node_s1.children
         a2 = node_s2.children
 
-        print("len(a1) : ", len(a1), "len(a2) : ", len(a2))
+        # print("len(a1) : ", len(a1), "len(a2) : ", len(a2))
 
         for a1_i in a1:
             for a2_i in a2:
