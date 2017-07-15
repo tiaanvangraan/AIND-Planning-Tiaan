@@ -511,16 +511,14 @@ class PlanningGraph():
         # TODO test for Competing Needs between nodes
         state = False
 
-        print(len(node_a1.prenodes), len(node_a1.parents), len(node_a2.prenodes), len(node_a2.parents))
+        # print(len(node_a1.prenodes), len(node_a1.parents), len(node_a2.prenodes), len(node_a2.parents))
 
         for pre_a1 in node_a1.parents:
             for pre_a2 in node_a2.parents:
-                # print(pre_a1.symbol, pre_a2.symbol, pre_a1.is_pos, pre_a2.is_pos)
 
                 # if pre_a1.symbol == pre_a2.symbol and pre_a1.is_pos != pre_a2.is_pos:
                 if pre_a1.is_mutex(pre_a2):
                     state = True
-                    print("SET")
 
         return state
 
@@ -584,17 +582,12 @@ class PlanningGraph():
         node_level_mutex = False
         set_match = False
 
-        a1 = node_s1.children
-        a2 = node_s2.children
-
-        # print("len(a1) : ", len(a1), "len(a2) : ", len(a2))
+        a1 = node_s1.parents
+        a2 = node_s2.parents
 
         for a1_i in a1:
             for a2_i in a2:
-                print(a1_i.action, a2_i.action)
-
                 if a1_i.is_mutex(a2_i) == False:
-                    print("mutex found : ", a1_i.action, a2_i.action)
                     set_match = True
 
         if node_s1.is_mutex(node_s2):
