@@ -607,7 +607,29 @@ class PlanningGraph():
 
         :return: int
         """
-        level_sum = 0
         # TODO implement
         # for each goal in the problem, determine the level cost, then add them together
+        level_sum = 0
+        level_counter = 0
+        goal_found = False
+        nr_sates = len(self.s_levels)
+
+        # print("len(self.s_levels) : ", nr_sates)
+
+        for goal in self.s_levels[nr_sates - 1]:
+            goal_found = False
+            level_counter = 0
+
+            for tmp_s_level in self.s_levels:
+                for tmp_s_literal in tmp_s_level:
+                    if goal.symbol == tmp_s_literal.symbol and goal.is_pos == tmp_s_literal.is_pos and goal_found == False and goal.is_pos == True:
+                        level_sum += level_counter
+                        goal_found = True
+                        # print("\ngoal.symbol : ", goal.symbol)
+                        # print("goal.is_pos : ", goal.is_pos)
+                        # print("level_counter : ", level_counter)
+                        # print("level_sum : ", level_sum)
+
+                level_counter += 1
+
         return level_sum
