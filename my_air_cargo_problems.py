@@ -106,10 +106,38 @@ class AirCargoProblem(Problem):
                             precond_neg = []
                             effect_add = [expr("At({}, {})".format(p, to))]
                             effect_rem = [expr("At({}, {})".format(p, fr))]
+
+                            # precond_pos2 = [expr("At({}, {})".format(p, to)),
+                            #                ]
+                            # precond_neg2 = []
+                            # effect_add2 = [expr("At({}, {})".format(p, fr))]
+                            # effect_rem2 = [expr("At({}, {})".format(p, to))]
+
                             fly = Action(expr("Fly({}, {}, {})".format(p, fr, to)),
                                          [precond_pos, precond_neg],
                                          [effect_add, effect_rem])
+
                             flys.append(fly)
+
+                            # fly2 = Action(expr("Fly({}, {}, {})".format(p, to, fr)),
+                            #              [precond_pos2, precond_neg2],
+                            #              [effect_add2, effect_rem2])
+                            #
+                            # print(fly.name, fly.args, fly.precond_pos, fly.precond_neg, fly.effect_add, fly.effect_rem)
+                            # print(fly2.name, fly2.args, fly2.precond_pos, fly2.precond_neg, fly2.effect_add, fly2.effect_rem)
+                            #
+                            # if fly2 not in flys:
+                            #     flys.append(fly)
+                            # else:
+                            #     print("Loop route, thus not added")
+                            #     print("fly", fly)
+                            #     print("fly2", fly2)
+
+                            # for i in flys:
+                            #     print(i.name, i.args, i.precond_pos, i.precond_neg, i.effect_add, i.effect_rem)
+
+
+
             return flys
 
         return load_actions() + unload_actions() + fly_actions()
@@ -206,27 +234,52 @@ class AirCargoProblem(Problem):
         executed.
         """
         i = 0
-        fit_pre = 0
         fit_count = 0
+        tmpNode = node
+        initial_fit = 0
 
-        while self.goal_test(node.state) == False:
-            action_to_perform = self.actions_list[i]
-            node.state = self.result(node.state, action_to_perform)
+        curr_state = (decode_state(tmpNode.state, self.state_map)).pos
 
-            state_pos = (decode_state(node.state, self.state_map)).pos
-            fit_cur = 0
+        # Determine initial fitness
+        for test_goal in self.goal:
+            if test_goal in curr_state:
+                initial_fit += 1
+
+        # count number of actions that move the current state towards the goal state
+        while self.goal_test(tmpNode.state) == False:
+
+            # Determine fitness PRIOR to the action
+            pre_fit = 0
+            curr_state = (decode_state(tmpNode.state, self.state_map)).pos
 
             for test_goal in self.goal:
-                if test_goal in state_pos:
-                    fit_cur += 1
+                if test_goal in curr_state:
+                    pre_fit += 1
 
-            if fit_cur > fit_pre:
+            # Apply each action in the list until the goal state is reached
+            action_to_perform = self.actions_list[i]
+            tmpNode.state = self.result(tmpNode.state, action_to_perform)
+
+            # Determine fitness POST to the action
+            post_fit = 0
+            curr_state = (decode_state(tmpNode.state, self.state_map)).pos
+
+            for test_goal in self.goal:
+                if test_goal in curr_state:
+                    post_fit += 1
+
+            print("\nAction in list : ", i, "PRE_fit : ", pre_fit)
+            print("Action in list : ", i, "POST_fit: ", post_fit)
+
+            # If the the state moved closer to the goal after applying the action, increase the count
+            if post_fit > pre_fit:
                 fit_count += 1
-                fit_pre = fit_cur
 
             i += 1
 
-        # print("fit_count", fit_count)
+        print("\nInitial fitness : ", initial_fit)
+        print("Number of goals : ", len(self.goal))
+        print("Min number of steps/actions required to reach goal : ", fit_count)
 
         return fit_count
 
