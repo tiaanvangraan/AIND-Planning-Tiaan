@@ -616,13 +616,14 @@ class PlanningGraph():
 
         # print("len(self.s_levels) : ", nr_sates)
 
-        for goal in self.s_levels[nr_sates - 1]:
+        # for goal in self.s_levels[nr_sates - 1]:
+        for goal in self.problem.goal:
             goal_found = False
             level_counter = 0
 
             for tmp_s_level in self.s_levels:
                 for tmp_s_literal in tmp_s_level:
-                    if goal.symbol == tmp_s_literal.symbol and goal.is_pos == tmp_s_literal.is_pos and goal_found == False and goal.is_pos == True:
+                    if goal == tmp_s_literal.symbol and tmp_s_literal.is_pos == True and goal_found == False:
                         level_sum += level_counter
                         goal_found = True
                         # print("\ngoal.symbol : ", goal.symbol)
