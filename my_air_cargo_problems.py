@@ -11,6 +11,8 @@ from my_planning_graph import PlanningGraph
 
 from functools import lru_cache
 
+import copy
+
 
 class AirCargoProblem(Problem):
     def __init__(self, cargos, planes, airports, initial: FluentState, goal: list):
@@ -235,14 +237,22 @@ class AirCargoProblem(Problem):
         """
         i = 0
         fit_count = 0
-        tmpNode = node
+        tmpNode = copy.deepcopy(node)
         initial_fit = 0
 
-        curr_state = (decode_state(tmpNode.state, self.state_map)).pos
+        # pg = PlanningGraph(self, node.state)
+        curr_state_pos = (decode_state(tmpNode.state, self.state_map)).pos
+        curr_state_neg = (decode_state(tmpNode.state, self.state_map)).neg
+
+
+        # print("curr_state_pos", curr_state_pos)
+        # print("curr_state_neg", curr_state_neg)
+        # print("self.goal", self.goal)
+        # print("pg.problem.goal", pg.problem.goal)
 
         # Determine initial fitness
         for test_goal in self.goal:
-            if test_goal in curr_state:
+            if test_goal in curr_state_pos:
                 initial_fit += 1
 
         # count number of actions that move the current state towards the goal state
@@ -250,10 +260,10 @@ class AirCargoProblem(Problem):
 
             # Determine fitness PRIOR to the action
             pre_fit = 0
-            curr_state = (decode_state(tmpNode.state, self.state_map)).pos
+            curr_state_pos = (decode_state(tmpNode.state, self.state_map)).pos
 
             for test_goal in self.goal:
-                if test_goal in curr_state:
+                if test_goal in curr_state_pos:
                     pre_fit += 1
 
             # Apply each action in the list until the goal state is reached
@@ -262,24 +272,25 @@ class AirCargoProblem(Problem):
 
             # Determine fitness POST to the action
             post_fit = 0
-            curr_state = (decode_state(tmpNode.state, self.state_map)).pos
+            curr_state_pos = (decode_state(tmpNode.state, self.state_map)).pos
 
             for test_goal in self.goal:
-                if test_goal in curr_state:
+                if test_goal in curr_state_pos:
                     post_fit += 1
 
-            print("\nAction in list : ", i, "PRE_fit : ", pre_fit)
-            print("Action in list : ", i, "POST_fit: ", post_fit)
+            # print("\nAction in list : ", i, "PRE_fit : ", pre_fit)
+            # print("Action in list : ", i, "POST_fit: ", post_fit)
 
             # If the the state moved closer to the goal after applying the action, increase the count
             if post_fit > pre_fit:
                 fit_count += 1
+                # node = tmpNode
 
             i += 1
 
-        print("\nInitial fitness : ", initial_fit)
-        print("Number of goals : ", len(self.goal))
-        print("Min number of steps/actions required to reach goal : ", fit_count)
+        # print("\nInitial fitness : ", initial_fit)
+        # print("Number of goals : ", len(self.goal))
+        # print("Min number of steps/actions required to reach goal : ", fit_count)
 
         return fit_count
 
