@@ -628,6 +628,8 @@ class PlanningGraph():
                         level_sum += level
                         goal_found = True
 
+                        # Output used for debugging
+                        # @@@@@@@@@@@@@@@@@@@@@@@@@
                         # for goal2 in self.problem.goal:
                         #     print("level", level, "goal", goal2)
                         #
@@ -638,12 +640,12 @@ class PlanningGraph():
                         #         literal2 = expr('~{}'.format(tmp_s_literal2.symbol))
                         #
                         #     print("level", level, "literal", literal2)
-
+                        #
                         # print("goal", goal)
                         # print("len(self.s_levels)", len(self.s_levels))
-                        # # print("goal_found", goal_found)
-                        # # print("tmp_s_literal.symbol", tmp_s_literal.symbol)
-                        # # print("tmp_s_literal.is_pos", tmp_s_literal.is_pos)
+                        # print("goal_found", goal_found)
+                        # print("tmp_s_literal.symbol", tmp_s_literal.symbol)
+                        # print("tmp_s_literal.is_pos", tmp_s_literal.is_pos)
                         # print("literal", literal)
                         # print("level", level)
                         # print("level_sum", level_sum, "\n")
@@ -656,25 +658,4 @@ class PlanningGraph():
 
         return level_sum
 
-        # level_sum = 0
-        #
-        # goal = copy.deepcopy(self.problem.goal)
-        #
-        # while len(goal) != 0:
-        #     subgoal = goal.pop()
-        #     goal_found = False
-        #
-        #     for level, level_set in enumerate(self.s_levels):
-        #         for s_node in level_set:
-        #             literal = expr(s_node.symbol)
-        #
-        #             if not s_node.is_pos:
-        #                 literal = expr('~{}'.format(s_node.symbol))
-        #
-        #             if subgoal == literal and not goal_found:
-        #                 level_sum += level
-        #                 goal_found = True
-        #
-        #
-        # return level_sum
 
