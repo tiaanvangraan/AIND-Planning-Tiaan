@@ -2,6 +2,7 @@ from aimacode.planning import Action
 from aimacode.search import Problem
 from aimacode.utils import expr
 from lp_utils import decode_state
+import copy
 
 
 class PgNode():
@@ -609,28 +610,71 @@ class PlanningGraph():
         """
         # TODO implement
         # for each goal in the problem, determine the level cost, then add them together
+
         level_sum = 0
-        level_counter = 0
-        goal_found = False
-        nr_sates = len(self.s_levels)
 
-        # print("len(self.s_levels) : ", nr_sates)
-
-        # for goal in self.s_levels[nr_sates - 1]:
         for goal in self.problem.goal:
             goal_found = False
-            level_counter = 0
 
-            for tmp_s_level in self.s_levels:
-                for tmp_s_literal in tmp_s_level:
-                    if goal == tmp_s_literal.symbol and tmp_s_literal.is_pos == True and goal_found == False:
-                        level_sum += level_counter
+            for level in range(len(self.s_levels)):
+                for tmp_s_literal in self.s_levels[level]:
+
+                    literal = expr(tmp_s_literal.symbol)
+
+                    if not tmp_s_literal.is_pos:
+                        literal = expr('~{}'.format(tmp_s_literal.symbol))
+
+                    if goal == literal and not goal_found:
+                        level_sum += level
                         goal_found = True
-                        # print("\ngoal.symbol : ", goal.symbol)
-                        # print("goal.is_pos : ", goal.is_pos)
-                        # print("level_counter : ", level_counter)
-                        # print("level_sum : ", level_sum)
 
-                level_counter += 1
+                        # for goal2 in self.problem.goal:
+                        #     print("level", level, "goal", goal2)
+                        #
+                        # for tmp_s_literal2 in self.s_levels[level]:
+                        #     literal2 = expr(tmp_s_literal2.symbol)
+                        #
+                        #     if not tmp_s_literal2.is_pos:
+                        #         literal2 = expr('~{}'.format(tmp_s_literal2.symbol))
+                        #
+                        #     print("level", level, "literal", literal2)
+
+                        # print("goal", goal)
+                        # print("len(self.s_levels)", len(self.s_levels))
+                        # # print("goal_found", goal_found)
+                        # # print("tmp_s_literal.symbol", tmp_s_literal.symbol)
+                        # # print("tmp_s_literal.is_pos", tmp_s_literal.is_pos)
+                        # print("literal", literal)
+                        # print("level", level)
+                        # print("level_sum", level_sum, "\n")
+
+                    if goal_found:
+                        break
+
+                if goal_found:
+                    break
 
         return level_sum
+
+        # level_sum = 0
+        #
+        # goal = copy.deepcopy(self.problem.goal)
+        #
+        # while len(goal) != 0:
+        #     subgoal = goal.pop()
+        #     goal_found = False
+        #
+        #     for level, level_set in enumerate(self.s_levels):
+        #         for s_node in level_set:
+        #             literal = expr(s_node.symbol)
+        #
+        #             if not s_node.is_pos:
+        #                 literal = expr('~{}'.format(s_node.symbol))
+        #
+        #             if subgoal == literal and not goal_found:
+        #                 level_sum += level
+        #                 goal_found = True
+        #
+        #
+        # return level_sum
+

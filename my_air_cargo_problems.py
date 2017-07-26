@@ -226,6 +226,7 @@ class AirCargoProblem(Problem):
         # requires implemented PlanningGraph class
         pg = PlanningGraph(self, node.state)
         pg_levelsum = pg.h_levelsum()
+
         return pg_levelsum
 
     @lru_cache(maxsize=8192)
